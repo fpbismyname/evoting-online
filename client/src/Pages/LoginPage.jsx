@@ -17,15 +17,18 @@ const LoginPage = () => {
 
   //Load constract for the first time
   const loadContract = async () => {
-    const web3 = new Web3(window.ethereum);
-    //get Contract Builder
-    const networkId = await web3.eth.net.getId();
-    const deployedNetwork = await ContractBuilder.networks[networkId];
-    const instance = new web3.eth.Contract(
-      ContractBuilder.abi,
-      deployedNetwork && deployedNetwork.address
-    );
-    setContract(instance);
+    if (window.ethereum){
+      const web3 = new Web3(window.ethereum);
+      //get Contract Builder
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = await ContractBuilder.networks[networkId];
+      const instance = new web3.eth.Contract(
+        ContractBuilder.abi,
+        deployedNetwork && deployedNetwork.address
+      );
+      setContract(instance);
+    } else {
+    }
   };
 
   //Load Account and contract
