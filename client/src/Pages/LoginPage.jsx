@@ -56,9 +56,9 @@ const LoginPage = () => {
 
         //Check admin privillage
         if (privillageChecker === true || admin === true) {
-          Goto("/managevote");
+          Goto("/evoting-online/managevote");
         } else if (privillageChecker === false  || admin === false) {
-          Goto("/vote");
+          Goto("/evoting-online/vote");
         } 
       } catch (err) {
         window.alert(err);

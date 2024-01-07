@@ -6,5 +6,7 @@
   "editor.quickSuggestions": {
     "strings": true
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "typescript.suggest.paths": false,
+  "javascript.suggest.paths": false
 }
