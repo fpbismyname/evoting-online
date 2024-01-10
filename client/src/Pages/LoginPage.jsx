@@ -3,6 +3,7 @@ import Web3 from "web3";
 import { useState, useEffect } from "react";
 import ContractBuilder from "../contracts/EVoting.json";
 import { useNavigate } from "react-router-dom";
+import NonAdminPage from "./nonAdminPage";
 
 const LoginPage = () => {
   const [accounts, setAccounts] = useState();
@@ -58,7 +59,7 @@ const LoginPage = () => {
         setAdmin(privillageChecker);
 
         //Check admin privillage
-        if (privillageChecker === true || admin === true) {
+        if (privillageChecker === true || admin === true) { 
           Goto("/evoting-online/managevote");
         } else if (privillageChecker === false  || admin === false) {
           Goto("/evoting-online/vote");

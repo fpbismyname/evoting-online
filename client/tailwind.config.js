@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       dropShadow: {
-        'myShadow': '0px 0px 5px black',
+        'myShadow': '0px 2px 1.5px rgb(36, 36, 36)',
       }
     },
   },

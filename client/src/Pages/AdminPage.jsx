@@ -1,18 +1,22 @@
-import React from "react";
-
+import React, { useEffect } from "react";
 
 const AdminPage = () => {
+
+  useEffect(()=>{
+  },[])
+
   return (
     <>
-      <h1 className="text-3xl font-bold m-10">AdminPage</h1>
-      <div className="bg-white rounded-md flex">
-        <div className="bg-black w-40 h-60">
-          <h1 className="text-black font-bold text-2xl">title</h1>
-          <p className="text-black font-bold text-sm">Description</p>
+      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="bg-blue-300 h-auto w-1/2 py-6 flex flex-row justify-between items-start rounded-xl">
+          <h1 className="text-white drop-shadow-myShadow text-3xl mx-10 font-bold flex">
+            Admin
+          </h1>
+          <h1 className="text-red-200 hover:text-red-500 transition cursor-pointer drop-shadow-myShadow text-3xl mx-10 font-bold flex">
+            Logout
+          </h1>
         </div>
-        <div className="bg-black w-40 h-60">
-          <h1 className="text-black font-bold text-2xl">title</h1>
-          <p className="text-black font-bold text-sm">Description</p>
+        <div className="bg-blue-300 h-auto w-1/2 rounded-xl flex flex-col py-6 justify-center items-center mt-5">
         </div>
       </div>
     </>
