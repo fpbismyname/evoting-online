@@ -6,6 +6,7 @@ const nonAdminPage = () => {
   const [contract, setContract] = useState(null);
   const [accounts, setAccounts] = useState();
   const [voteMaterial, setVoteMaterial] = useState();
+  const [totalVoteMaterial, setTotalVoteMaterial] = useState(0);
 
   // debug
   useEffect(() => {
@@ -34,9 +35,10 @@ const nonAdminPage = () => {
         const totalVoting = await instance.methods
           .totalVotingMaterials()
           .call({ from: account[0] });
+        setTotalVoteMaterial(totalVoteMaterial);
 
+        //Get Vote Material Value
         const voteMaterialArray = [];
-
         for (let i = 0; i <= parseInt(totalVoting); i++) {
           const data = await instance.methods
             .votingMaterials(i)
@@ -52,8 +54,10 @@ const nonAdminPage = () => {
     }
   };
   
-  console.log(voteMaterial)
-  console.log(contract);
+  //debug
+  // console.log(voteMaterial)
+  console.log(totalVoteMaterial)
+  // console.log(contract);
 
   return (
     <>
