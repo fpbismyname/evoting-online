@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import ContractBuilder from "../contracts/EVoting.json";
+import IconVote from "../../public/vite.svg"
 
 const AdminPage = () => {
   const [accounts, setAccounts] = useState();
@@ -78,18 +79,24 @@ const AdminPage = () => {
     }
   };
 
-  // console.log(contract);
+  console.log(contract);
 
   //Create the vote
   const createVote = async () => {
     try {
       const akun = new Web3(window.ethereum);
-      const gasPrice = await akun.eth.getGasPrice();
+      const gasPrice = 10000000000;
       const gasLimit = null;
 
       await contract.methods
-        .createVotingMaterial(title, description)
-        .send({ from: accounts[0], gas: gasLimit, gasPrice: gasPrice })
+        .createVotingMaterial(title.toString(), description.toString())
+        .send({
+          from: accounts[0],
+          gas: gasLimit,
+          gasPrice: gasPrice,
+          maxPriorityFeePerGas: null,
+          maxFeePerGas: null,
+        })
         .then(() => window.alert("Voting Material Created !"));
     } catch (err) {
       window.alert(err);
@@ -104,10 +111,24 @@ const AdminPage = () => {
           <h1 className="text-white drop-shadow-myShadow text-3xl mx-10 font-bold flex">
             Admin
           </h1>
-          <h1 className="text-red-200 hover:text-red-500 transition cursor-pointer drop-shadow-myShadow text-3xl mx-10 font-bold flex">
+          <h1 className="text-white hover:text-red-500 transition cursor-pointer drop-shadow-myShadow text-3xl mx-10 font-bold flex">
             Logout
           </h1>
         </div>
+        <div className="bg-blue-300 h-auto w-auto py-3 my-4 flex flex-col justify-center items-center rounded-xl">
+          <h1 className="text-white drop-shadow-myShadow text-l mx-10 font-bold flex">
+            Option
+          </h1>
+          <div className="flex flex-row my-4">
+            <h1 className="text-green-200 cursor-pointer hover:bg-green-200 hover:text-gray-700 p-2 rounded-lg hover:drop-shadow-none drop-shadow-myShadow text-l mx-10 font-bold flex">
+              Create
+            </h1>
+            <h1 className="text-red-200 cursor-pointer hover:bg-red-200 hover:text-gray-700 p-2 rounded-lg hover:drop-shadow-none drop-shadow-myShadow text-l mx-10 font-bold flex">
+              Delete
+            </h1>
+          </div>
+        </div>
+        {/* Create Voting Material */}
         <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col py-6 justify-center items-center mt-5">
           <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 p-2 rounded-xl">
             Create Voting Material
@@ -147,6 +168,20 @@ const AdminPage = () => {
               className="text-white font-bold hover:bg-blue-700 p-3 bg-blue-500 rounded-lg m-auto"
             />
           </section>
+        </div>
+        {/* Preview Voting */}
+        <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col mt-5">
+        <h1 className="text-white text-xl font-bold block w-64 h-auto bg-opacity-50 bg-gray-800 p-2 rounded-t-xl">
+            Preview Voting Material
+          </h1>
+          {/* Voting Card */}
+          <div className="bg-white w-64 h-auto text-gray-800 flex flex-row justify-center gap-4 list-none">
+              <li>
+                <a className="flex flex-row bg-black w-auto h-auto">
+                <img src={IconVote}/>
+                </a>
+              </li>
+          </div>
         </div>
       </div>
     </>
