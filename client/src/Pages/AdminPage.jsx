@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import ContractBuilder from "../contracts/EVoting.json";
-import IconVote from "../../public/vite.svg"
+import IconVote from "../vite.svg";
 
 const AdminPage = () => {
   const [accounts, setAccounts] = useState();
@@ -10,6 +10,8 @@ const AdminPage = () => {
   const [description, setDescription] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [messageDesc, setMessageDesc] = useState("");
+  const [voteMaterial, setVoteMaterial] = useState([]);
+  const [totalVoteMaterial, setTotalVoteMaterial] = useState(0);
 
   useEffect(() => {
     loadContract();
@@ -32,6 +34,22 @@ const AdminPage = () => {
           deployedNetwork && deployedNetwork.address
         );
         setContract(instance);
+
+        //Get total Voting
+        const totalVoting = await instance.methods
+          .totalVotingMaterials()
+          .call({ from: account[0] });
+        setTotalVoteMaterial(parseInt(totalVoting));
+
+        //Get Vote Material Value
+        const voteMaterialArray = [];
+        for (let i = 0; i <= parseInt(totalVoting); i++) {
+          const data = await instance.methods
+            .votingMaterials(i)
+            .call({ from: account[0] });
+          voteMaterialArray.push(data);
+        }
+        setVoteMaterial(voteMaterialArray);
       } catch (err) {
         window.alert(err);
       }
@@ -79,7 +97,9 @@ const AdminPage = () => {
     }
   };
 
-  console.log(contract);
+  //debug
+  console.log(voteMaterial);
+  console.log(totalVoteMaterial);
 
   //Create the vote
   const createVote = async () => {
@@ -106,17 +126,17 @@ const AdminPage = () => {
   //debug
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <div className="bg-blue-300 h-auto w-auto py-6 flex flex-row justify-between items-start rounded-xl">
-          <h1 className="text-white drop-shadow-myShadow text-3xl mx-10 font-bold flex">
+      <div className="flex flex-col items-center justify-center h-auto">
+        <div className="bg-blue-300 h-auto w-auto pr-6 flex flex-row justify-between items-center rounded-xl">
+          <h1 className="bg-gray-800 p-8 rounded-l-xl mr-80 text-white drop-shadow-myShadow text-3xl font-bold flex">
             Admin
           </h1>
-          <h1 className="text-white hover:text-red-500 transition cursor-pointer drop-shadow-myShadow text-3xl mx-10 font-bold flex">
+          <h1 className="text-white hover:text-red-500 transition cursor-pointer drop-shadow-myShadow text-3xl font-bold flex">
             Logout
           </h1>
         </div>
-        <div className="bg-blue-300 h-auto w-auto py-3 my-4 flex flex-col justify-center items-center rounded-xl">
-          <h1 className="text-white drop-shadow-myShadow text-l mx-10 font-bold flex">
+        <div className="bg-blue-300 h-auto w-auto my-4 flex flex-col justify-center items-center rounded-xl">
+          <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-32 py-2 rounded-t-xl">
             Option
           </h1>
           <div className="flex flex-row my-4">
@@ -129,12 +149,12 @@ const AdminPage = () => {
           </div>
         </div>
         {/* Create Voting Material */}
-        <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col py-6 justify-center items-center mt-5">
-          <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 p-2 rounded-xl">
+        <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col justify-center items-center">
+          <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-10 py-2 rounded-t-xl">
             Create Voting Material
           </h1>
           {/* Create Voting Material */}
-          <section className="m-10 flex flex-col gap-3">
+          <section className="flex flex-col w-auto m-5 gap-3">
             <div className="flex flex-col items-center justify-center gap-2">
               {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
                 Title
@@ -144,6 +164,7 @@ const AdminPage = () => {
                 type="text"
                 maxLength="50"
                 onChange={handleChangeTitle}
+                spellCheck="false"
                 placeholder="Title"
               ></input>
               <p className="font-bold p-2 rounded-xl">{messageTitle}</p>
@@ -158,6 +179,7 @@ const AdminPage = () => {
                 onChange={handleChangeDesc}
                 maxLength="250"
                 placeholder="Description"
+                spellCheck="false"
               ></textarea>
               <p className="font-bold p-2 rounded-xl">{messageDesc}</p>
             </div>
@@ -171,16 +193,34 @@ const AdminPage = () => {
         </div>
         {/* Preview Voting */}
         <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col mt-5">
-        <h1 className="text-white text-xl font-bold block w-64 h-auto bg-opacity-50 bg-gray-800 p-2 rounded-t-xl">
+          <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 p-2 rounded-t-xl">
             Preview Voting Material
           </h1>
           {/* Voting Card */}
-          <div className="bg-white w-64 h-auto text-gray-800 flex flex-row justify-center gap-4 list-none">
-              <li>
-                <a className="flex flex-row bg-black w-auto h-auto">
-                <img src={IconVote}/>
-                </a>
-              </li>
+          <div className="font-bold w-96 h-auto text-gray-800 justify-center items-start rounded-b-xl flex flex-col gap-4 list-none m-5">
+            {voteMaterial
+              .filter((txt) => txt.title !== "")
+              .map((vote) => {
+                for (let i = 0; i < voteMaterial.length; i++) {
+                  return (
+                    <li key={vote[i]}>
+                      <a className="flex p-7 w-96 rounded-xl bg-blue-200 break-words h-auto gap-7">
+                        <img src={IconVote} />
+                        <div className="flex flex-col text-left w-96">
+                          <h1 className="flex">{vote.title}</h1>
+                          <p className="flex text-xs">{vote.desc}</p>
+                          <p className="flex my-5 justify-between items-center">
+                            Total Vote : {parseInt(vote.vote)}
+                            <a className="text-white font-bold hover:bg-blue-700 p-3 bg-blue-500 rounded-lg cursor-pointer">
+                              Vote
+                            </a >
+                          </p>
+                        </div>
+                      </a>
+                    </li>
+                  );
+                }
+              })}
           </div>
         </div>
       </div>

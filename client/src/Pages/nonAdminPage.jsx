@@ -35,7 +35,7 @@ const nonAdminPage = () => {
         const totalVoting = await instance.methods
           .totalVotingMaterials()
           .call({ from: account[0] });
-        setTotalVoteMaterial(totalVoteMaterial);
+        setTotalVoteMaterial(totalVoting);
 
         //Get Vote Material Value
         const voteMaterialArray = [];
