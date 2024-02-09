@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Web3 from "web3";
 import ContractBuilder from "../contracts/EVoting.json";
 import IconVote from "../vite.svg";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const [accounts, setAccounts] = useState();
@@ -10,8 +11,11 @@ const AdminPage = () => {
   const [description, setDescription] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
   const [messageDesc, setMessageDesc] = useState("");
+  const [voteSelected, setVoteSelected] = useState(null);
   const [voteMaterial, setVoteMaterial] = useState([]);
   const [totalVoteMaterial, setTotalVoteMaterial] = useState(0);
+  const [admin, setAdmin] = useState();
+  const Goto = useNavigate();
 
   useEffect(() => {
     loadContract();
@@ -40,6 +44,18 @@ const AdminPage = () => {
           .totalVotingMaterials()
           .call({ from: account[0] });
         setTotalVoteMaterial(parseInt(totalVoting));
+
+        //Check Privillage Account
+        const privillageChecker = await instance.methods
+          .isAdmin()
+          .call({ from: account[0] });
+        setAdmin(privillageChecker);
+        //Checker
+        if (privillageChecker == true || admin == true) {
+          Goto("/evoting-online/managevote");
+        } else if (privillageChecker == false || admin == false) {
+          Goto("/evoting-online/vote");
+        }
 
         //Get Vote Material Value
         const voteMaterialArray = [];
@@ -117,7 +133,10 @@ const AdminPage = () => {
           maxPriorityFeePerGas: null,
           maxFeePerGas: null,
         })
-        .then(() => window.alert("Voting Material Created !"));
+        .then(() => {
+          window.alert("Voting Material Created !");
+          loadContract();
+        });
     } catch (err) {
       window.alert(err);
     }
@@ -135,7 +154,7 @@ const AdminPage = () => {
             Logout
           </h1>
         </div>
-        <div className="bg-blue-300 h-auto w-auto my-4 flex flex-col justify-center items-center rounded-xl">
+        {/* <div className="bg-blue-300 h-auto w-auto my-4 flex flex-col justify-center items-center rounded-xl">
           <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-32 py-2 rounded-t-xl">
             Option
           </h1>
@@ -147,49 +166,74 @@ const AdminPage = () => {
               Delete
             </h1>
           </div>
-        </div>
+        </div> */}
         {/* Create Voting Material */}
-        <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col justify-center items-center">
-          <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-10 py-2 rounded-t-xl">
-            Create Voting Material
-          </h1>
-          {/* Create Voting Material */}
-          <section className="flex flex-col w-auto m-5 gap-3">
-            <div className="flex flex-col items-center justify-center gap-2">
-              {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
+        <div className="flex flex-row gap-5">
+          <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col justify-center items-center mt-4">
+            <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-10 py-2 rounded-t-xl">
+              Create Voting Material
+            </h1>
+            {/* Create Voting Material */}
+            <section className="flex flex-col w-auto m-5 gap-3">
+              <div className="flex flex-col items-center justify-center gap-2">
+                {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
                 Title
               </label> */}
-              <input
-                className="text-sm rounded-md drop-shadow-myShadow text-gray-800 font-bold p-2 outline-none focus:bg-gray-500 focus:text-white"
-                type="text"
-                maxLength="50"
-                onChange={handleChangeTitle}
-                spellCheck="false"
-                placeholder="Title"
-              ></input>
-              <p className="font-bold p-2 rounded-xl">{messageTitle}</p>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-2">
-              {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
+                <input
+                  className="text-sm rounded-md drop-shadow-myShadow text-gray-800 font-bold p-2 outline-none focus:bg-gray-500 focus:text-white"
+                  type="text"
+                  maxLength="50"
+                  onChange={handleChangeTitle}
+                  spellCheck="false"
+                  placeholder="Title"
+                ></input>
+                <p className="font-bold p-2 rounded-xl">{messageTitle}</p>
+              </div>
+              <div className="flex flex-col items-center justify-center gap-2">
+                {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
                 Description
               </label> */}
-              <textarea
-                className="overflow-clip focus:overflow-auto text-sm rounded-md w-auto text-gray-800 drop-shadow-myShadow font-bold p-2 outline-none focus:bg-gray-500 focus:text-white resize-y max-h-40 min-h-40"
-                type="text"
-                onChange={handleChangeDesc}
-                maxLength="250"
-                placeholder="Description"
-                spellCheck="false"
-              ></textarea>
-              <p className="font-bold p-2 rounded-xl">{messageDesc}</p>
-            </div>
-            <input
-              type="submit"
-              value="Submit"
-              onClick={submitVote}
-              className="text-white font-bold hover:bg-blue-700 p-3 bg-blue-500 rounded-lg m-auto"
-            />
-          </section>
+                <textarea
+                  className="overflow-clip focus:overflow-auto text-sm rounded-md w-auto text-gray-800 drop-shadow-myShadow font-bold p-2 outline-none focus:bg-gray-500 focus:text-white resize-y max-h-40 min-h-40"
+                  type="text"
+                  onChange={handleChangeDesc}
+                  maxLength="250"
+                  placeholder="Description"
+                  spellCheck="false"
+                ></textarea>
+                <p className="font-bold p-2 rounded-xl">{messageDesc}</p>
+              </div>
+              <input
+                type="submit"
+                value="Submit"
+                onClick={submitVote}
+                className="text-white font-bold hover:bg-blue-700 p-3 bg-blue-500 rounded-lg m-auto"
+              />
+            </section>
+          </div>
+          <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col justify-start items-center mt-4">
+            <h1 className="text-white text-xl font-bold block w-auto h-auto bg-opacity-50 bg-gray-800 px-10 py-2 rounded-t-xl">
+              Delete Voting Material
+            </h1>
+            {/* Create Voting Material */}
+            <section className="flex flex-col w-auto m-5 gap-3">
+              <div className="flex flex-col items-center justify-center gap-2">
+                {/* <label className="text-white text-l font-bold mx-4 drop-shadow-myShadow">
+                Title
+              </label> */}
+                <input
+                  className="text-sm rounded-md drop-shadow-myShadow text-gray-800 font-bold p-2 outline-none focus:bg-gray-500 focus:text-white"
+                  type=""
+                  maxLength="50"
+                  onChange={handleChangeTitle}
+                  spellCheck="false"
+                  placeholder="Title"
+                ></input>
+                <p className="font-bold p-2 rounded-xl">{messageTitle}</p>
+              </div>
+              
+            </section>
+          </div>
         </div>
         {/* Preview Voting */}
         <div className="bg-blue-300 h-auto w-auto rounded-xl flex flex-col mt-5">
@@ -202,8 +246,9 @@ const AdminPage = () => {
               .filter((txt) => txt.title !== "")
               .map((vote) => {
                 for (let i = 0; i < voteMaterial.length; i++) {
+                  console.log("Values :" + vote[0]);
                   return (
-                    <li key={vote[i]}>
+                    <li key={vote[0]}>
                       <a className="flex p-7 w-96 rounded-xl bg-blue-200 break-words h-auto gap-7">
                         <img src={IconVote} />
                         <div className="flex flex-col text-left w-96">
@@ -213,7 +258,7 @@ const AdminPage = () => {
                             Total Vote : {parseInt(vote.vote)}
                             <a className="text-white font-bold hover:bg-blue-700 p-3 bg-blue-500 rounded-lg cursor-pointer">
                               Vote
-                            </a >
+                            </a>
                           </p>
                         </div>
                       </a>

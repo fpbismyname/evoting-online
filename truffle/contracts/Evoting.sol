@@ -8,6 +8,7 @@ contract EVoting {
 
     //Data For Voting Material
     struct VotingMaterial {
+        uint id;
         string title;
         string desc;
         mapping(address => bool) hasVoted;
@@ -43,6 +44,7 @@ contract EVoting {
         require(bytes(_title).length > 0, "Title is Empty !");
         require(bytes(_desc).length > 0, "Description is Empty !");
         uint id = totalVotingMaterials++;
+        votingMaterials[id].id = id;
         votingMaterials[id].title = _title;
         votingMaterials[id].desc = _desc;
         votingMaterials[id].exists = true;
